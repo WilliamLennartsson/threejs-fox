@@ -11,11 +11,19 @@ let scene, camera, renderer, mixer, loader, clock
 let fox // Scene
 let gltfFox // Full gltf object
 
+// Animation vars
 const foxAnimations = ["Survey", "Walk", "Run"] // All avaliable animations
-let animationIndex = 0
+let animationIndex = 2
+let activeAnimation
 
 // For mouse events
 let isPressingDown = false
+const keysPressed = {
+    'W': false,
+    'S': false,
+    'A': false,
+    'D': false
+}
 
 window.onload = () => {
     init()
@@ -39,6 +47,30 @@ window.onmousemove = (e) => {
     // console.log("Move")
     // camera.rotation.y += 1
     // console.log('camera.rotation.y', camera.rotation.y)
+}
+
+window.onkeydown = (e) => {
+    if (e.keyCode == 65) { // A
+        keysPressed['A'] = true
+    } else if (e.keyCode == 83) { // S
+        keysPressed['S'] = true
+    } else if (e.keyCode == 68) { // D
+        keysPressed['D'] = true
+    } else if (e.keyCode == 87) { // W
+        keysPressed['W'] = true
+    }
+}
+
+window.onkeyup = (e) => {
+    if (e.keyCode == 65) { // A
+        keysPressed['A'] = false
+    } else if (e.keyCode == 83) { // S
+        keysPressed['S'] = false
+    } else if (e.keyCode == 68) { // D
+        keysPressed['D'] = false
+    } else if (e.keyCode == 87) { // W
+        keysPressed['W'] = false
+    }
 }
 
 const rotateFox = () => {
@@ -100,10 +132,7 @@ function init() {
         console.log('gltf', gltf)
         // Animation
         mixer = new THREE.AnimationMixer(gltf.scene);
-        const clip = findAnimation("Survey")
-
-
-        playAnimation(clip)
+        nextAnimation()
 
         // Render
         renderer.render(scene, camera)
@@ -116,7 +145,7 @@ function init() {
 }
 
 const nextAnimation = () => {
-    activeAnimation.stop()
+    if (activeAnimation) activeAnimation.stop()
     animationIndex++
     if (animationIndex >= foxAnimations.length) animationIndex = 0
 
@@ -129,18 +158,36 @@ const findAnimation = (animationName) => {
     return THREE.AnimationClip.findByName(clips, animationName)
 }
 
-let activeAnimation
 const playAnimation = (clip) => {
-    console.log('animationIndex', animationIndex)
-    console.log('activeAnimation', activeAnimation)
-    console.log('clip', clip)
     activeAnimation = mixer.clipAction(clip)
     activeAnimation.play()
 }
 
 const update = () => {
     const deltaSeconds = clock.getDelta()
+    moveFox()
     mixer.update(deltaSeconds);
     renderer.render(scene, camera)
     requestAnimationFrame(update)
+}
+
+function moveFox() {
+    var delta = clock.getDelta(); // seconds
+    var moveDistance = 500 * delta; // n pixels per second
+    var dir = new THREE.Vector3(fox.position.x, fox.position.y, fox.position.z);
+    dir.sub(camera.position).normalize(); // direction vector between the camera and the ball
+    if (keysPressed['W'] || keysPressed['ARROWUP']) {
+        fox.position.x += moveDistance * dir.x;
+        fox.position.z += moveDistance * dir.z;
+    }
+    if (keysPressed['S'] || keysPressed['ARROWDOWN']) {
+        fox.position.x -= moveDistance * dir.x;
+        fox.position.z -= moveDistance * dir.z;
+    }
+    if (keysPressed['A'] || keysPressed['ARROWLEFT']) {
+        fox.position.x -= moveDistance * 0.2;
+    }
+    if (keysPressed['D'] || keysPressed['ARROWRIGHT']) {
+        fox.position.x += moveDistance * 0.2;
+    }
 }
