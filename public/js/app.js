@@ -165,14 +165,13 @@ const playAnimation = (clip) => {
 
 const update = () => {
     const deltaSeconds = clock.getDelta()
-    moveFox()
+    moveFox(deltaSeconds)
     mixer.update(deltaSeconds);
     renderer.render(scene, camera)
     requestAnimationFrame(update)
 }
 
-function moveFox() {
-    var delta = clock.getDelta(); // seconds
+function moveFox(delta) {
     var moveDistance = 500 * delta; // n pixels per second
     var dir = new THREE.Vector3(fox.position.x, fox.position.y, fox.position.z);
     dir.sub(camera.position).normalize(); // direction vector between the camera and the ball
