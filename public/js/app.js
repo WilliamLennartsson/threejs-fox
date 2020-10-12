@@ -73,11 +73,12 @@ window.onkeyup = (e) => {
     }
 }
 
+// Rotate fox
 const rotateFox = () => {
     if (fox == undefined || fox == null) return
     fox.rotation.y += 0.005
-    renderer.render(scene, camera)
-    requestAnimationFrame(rotateFox)
+    // renderer.render(scene, camera)
+    // requestAnimationFrame(rotateFox)
 }
 
 function init() {
@@ -144,6 +145,7 @@ function init() {
     })
 }
 
+// Looping through all animations
 const nextAnimation = () => {
     if (activeAnimation) activeAnimation.stop()
     animationIndex++
@@ -153,24 +155,29 @@ const nextAnimation = () => {
     playAnimation(clip)
 }
 
+// Function for finding animation based on name
 const findAnimation = (animationName) => {
     var clips = gltfFox.animations;
     return THREE.AnimationClip.findByName(clips, animationName)
 }
 
+// Play animation of given clip
 const playAnimation = (clip) => {
     activeAnimation = mixer.clipAction(clip)
     activeAnimation.play()
 }
 
+// Update loop
 const update = () => {
     const deltaSeconds = clock.getDelta()
     moveFox(deltaSeconds)
     mixer.update(deltaSeconds);
     renderer.render(scene, camera)
+    rotateFox()
     requestAnimationFrame(update)
 }
 
+// Move fox based on keyboard input
 function moveFox(delta) {
     var moveDistance = 500 * delta; // n pixels per second
     var dir = new THREE.Vector3(fox.position.x, fox.position.y, fox.position.z);
