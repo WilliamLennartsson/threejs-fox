@@ -84,6 +84,7 @@ const rotateFox = () => {
 function init() {
     // Clock setup
     clock = new THREE.Clock()
+
     // Loader setup
     loader = new GLTFLoader()
 
@@ -118,7 +119,6 @@ function init() {
     renderer = new THREE.WebGLRenderer()
     renderer.setSize(window.innerWidth, window.innerHeight)
     document.body.appendChild(renderer.domElement)
-
 
     loader.load(dataPath, function (gltf) {
 
@@ -173,7 +173,7 @@ const update = () => {
     moveFox(deltaSeconds)
     mixer.update(deltaSeconds);
     renderer.render(scene, camera)
-    rotateFox()
+    // rotateFox()
     requestAnimationFrame(update)
 }
 
@@ -183,17 +183,17 @@ function moveFox(delta) {
     var dir = new THREE.Vector3(fox.position.x, fox.position.y, fox.position.z);
     dir.sub(camera.position).normalize(); // direction vector between the camera and the ball
     if (keysPressed['W'] || keysPressed['ARROWUP']) {
-        fox.position.x += moveDistance * dir.x;
-        fox.position.z += moveDistance * dir.z;
+        camera.position.x += moveDistance * dir.x;
+        camera.position.z += moveDistance * dir.z;
     }
     if (keysPressed['S'] || keysPressed['ARROWDOWN']) {
-        fox.position.x -= moveDistance * dir.x;
-        fox.position.z -= moveDistance * dir.z;
+        camera.position.x -= moveDistance * dir.x;
+        camera.position.z -= moveDistance * dir.z;
     }
     if (keysPressed['A'] || keysPressed['ARROWLEFT']) {
-        fox.position.x -= moveDistance * 0.2;
+        camera.position.x -= moveDistance * 0.2;
     }
     if (keysPressed['D'] || keysPressed['ARROWRIGHT']) {
-        fox.position.x += moveDistance * 0.2;
+        camera.position.x += moveDistance * 0.2;
     }
 }
